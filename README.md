@@ -1,6 +1,10 @@
 # Insider Trade Ratio (ITR) Platform
 
+**Copyright (c) 2025 Anant Madhok. All Rights Reserved.**
+
 A Flask-based web application for analyzing stock market data and calculating Insider Trade Ratios to identify unusual trading patterns.
+
+> **⚠️ PROPRIETARY SOFTWARE**: This software is proprietary and confidential. Unauthorized copying, modification, distribution, or use is strictly prohibited without express written permission from the copyright holder.
 
 ## Features
 
@@ -168,11 +172,29 @@ ITR = [(Volume + 1) × |Vega| × |Delta| × Implied Volatility] / [(Open Interes
 - **APIs**: Alpha Vantage, Financial Modeling Prep, yfinance
 - **Deployment**: Render, Gunicorn
 
-## License
+## Copyright & License
 
-This project is open source and available for personal use.
+**Copyright (c) 2025 Anant Madhok. All Rights Reserved.**
+
+This software is proprietary and confidential. Unauthorized copying, modification, distribution, or use of this software, via any medium, is strictly prohibited without the express written permission of Anant Madhok.
+
+### Permitted Use
+- Personal, non-commercial use only
+- Educational purposes (with attribution)
+
+### Prohibited Use
+- Commercial use without license
+- Redistribution or resale
+- Modification and distribution of derivative works
+- Removal of copyright notices
+
+### Licensing Inquiries
+For licensing, commercial use, or collaboration inquiries, please contact:
+- **GitHub**: [@Anant-Madhok231](https://github.com/Anant-Madhok231)
+
+See [COPYRIGHT.txt](COPYRIGHT.txt) and [LICENSE](LICENSE) for full terms.
 
 ## Support
 
-For issues or questions, please open an issue on GitHub.
+For issues or questions, please open an issue on GitHub or contact the copyright holder.
 

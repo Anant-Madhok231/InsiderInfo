@@ -1,3 +1,13 @@
+"""
+Copyright (c) 2025 Anant Madhok. All Rights Reserved.
+
+This software is proprietary and confidential. Unauthorized copying, modification,
+distribution, or use of this software, via any medium, is strictly prohibited
+without the express written permission of Anant Madhok.
+
+For licensing inquiries: GitHub @Anant-Madhok231
+"""
+
 from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
 import yfinance as yf
 import random

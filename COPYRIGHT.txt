@@ -1,0 +1,44 @@
+COPYRIGHT NOTICE
+================
+
+Copyright (c) 2025 Anant Madhok. All Rights Reserved.
+
+This software, including but not limited to:
+- Source code files (*.py)
+- HTML templates
+- CSS stylesheets
+- JavaScript files
+- Documentation files
+- Configuration files
+
+is the proprietary and confidential property of Anant Madhok.
+
+UNAUTHORIZED USE PROHIBITED
+----------------------------
+You may NOT:
+- Copy, reproduce, or duplicate any part of this software
+- Modify, adapt, or create derivative works
+- Distribute, publish, or sublicense this software
+- Use this software for commercial purposes
+- Remove or alter any copyright notices
+
+PERMITTED USE
+-------------
+This software is provided for personal, non-commercial use only.
+Any use beyond personal viewing requires explicit written permission 
+from the copyright holder.
+
+LICENSING INQUIRIES
+-------------------
+For licensing, commercial use, or collaboration inquiries, please contact:
+Anant Madhok
+GitHub: @Anant-Madhok231
+
+TRADEMARKS
+----------
+"Insider Trade Ratio", "ITR", "StockTracker", and related names are 
+trademarks or service marks of Anant Madhok.
+
+This notice must be included in all copies or substantial portions 
+of the software.
+
