@@ -148,17 +148,21 @@ def send_verification_email(to_email, verification_code):
 def get_stock_data(symbol):
     try:
         stock = yf.Ticker(symbol)
-        # Get real-time data
-        hist = stock.history(period='1d')
+        # Get real-time data with timeout
+        hist = stock.history(period='1d', timeout=10)
         if hist.empty:
+            print(f"No historical data for {symbol}")
             return None
             
         current_price = hist['Close'].iloc[-1]
         open_price = hist['Open'].iloc[0]
         change = current_price - open_price
-        change_percent = (change / open_price) * 100
+        change_percent = (change / open_price) * 100 if open_price > 0 else 0
         
-        info = stock.info
+        try:
+            info = stock.info
+        except:
+            info = {}
         
         return {
             'symbol': symbol,
@@ -186,17 +190,31 @@ def get_real_time_stock_data(symbol):
             "apikey": app.config['ALPHA_VANTAGE_API_KEY']
         }
         
-        response = requests.get(ALPHA_VANTAGE_BASE_URL, params=params)
-        data = response.json()
+        response = requests.get(ALPHA_VANTAGE_BASE_URL, params=params, timeout=10)
+        response.raise_for_status()
         
-        if "Global Quote" not in data:
+        # Check if response is valid JSON
+        try:
+            data = response.json()
+        except ValueError as e:
+            print(f"Invalid JSON response for {symbol}: {response.text[:200]}")
+            return None
+        
+        if "Global Quote" not in data or not data.get("Global Quote"):
+            print(f"No Global Quote data for {symbol}")
             return None
             
         quote = data["Global Quote"]
         
         # Get company overview for additional details
         params["function"] = "OVERVIEW"
-        overview = requests.get(ALPHA_VANTAGE_BASE_URL, params=params).json()
+        overview_response = requests.get(ALPHA_VANTAGE_BASE_URL, params=params, timeout=10)
+        overview_response.raise_for_status()
+        
+        try:
+            overview = overview_response.json()
+        except ValueError:
+            overview = {}
         
         return {
             'symbol': symbol,
@@ -205,12 +223,15 @@ def get_real_time_stock_data(symbol):
             'change': float(quote.get('09. change', 0)),
             'change_percent': quote.get('10. change percent', '0%'),
             'volume': int(quote.get('06. volume', 0)),
-            'market_cap': float(overview.get('MarketCapitalization', 0)),
+            'market_cap': float(overview.get('MarketCapitalization', 0)) if overview.get('MarketCapitalization') else 0,
             'pe_ratio': float(overview.get('PERatio', 0)) if overview.get('PERatio') else None,
             'high_24h': float(quote.get('03. high', 0)),
             'low_24h': float(quote.get('04. low', 0)),
             'last_updated': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         }
+    except requests.exceptions.RequestException as e:
+        print(f"Request error fetching data for {symbol}: {str(e)}")
+        return None
     except Exception as e:
         print(f"Error fetching data for {symbol}: {str(e)}")
         return None
@@ -231,12 +252,20 @@ def get_all_stocks():
                 'outputsize': 'compact',
                 'datatype': 'json',
             }
-            response = requests.get(ALPHA_VANTAGE_BASE_URL, params=params)
-            data = response.json()
+            response = requests.get(ALPHA_VANTAGE_BASE_URL, params=params, timeout=10)
+            response.raise_for_status()
+            
+            # Check if response is valid JSON
+            try:
+                data = response.json()
+            except ValueError as e:
+                print(f"Invalid JSON response for {symbol}: {response.text[:200]}")
+                continue
+            
             time_series_key = f"Time Series ({interval})"
             bars = data.get(time_series_key, {})
             if not bars:
-                print(f"No intraday data for {symbol}: {data}")
+                print(f"No intraday data for {symbol}")
                 continue
             latest_time = sorted(bars.keys(), reverse=True)[0]
             latest_bar = bars[latest_time]
@@ -251,8 +280,12 @@ def get_all_stocks():
                 'symbol': symbol,
                 'apikey': api_key
             }
-            overview_resp = requests.get(ALPHA_VANTAGE_BASE_URL, params=overview_params)
-            overview = overview_resp.json()
+            overview_resp = requests.get(ALPHA_VANTAGE_BASE_URL, params=overview_params, timeout=10)
+            overview_resp.raise_for_status()
+            try:
+                overview = overview_resp.json()
+            except ValueError:
+                overview = {}
             name = overview.get('Name', symbol)
             market_cap = float(overview.get('MarketCapitalization', 0))
             pe_ratio = float(overview.get('PERatio', 0)) if overview.get('PERatio') else None
@@ -273,6 +306,9 @@ def get_all_stocks():
                 'last_updated': latest_time
             }
             time.sleep(13)  # Wait 13 seconds to avoid rate limit
+        except requests.exceptions.RequestException as e:
+            print(f"Request error fetching Alpha Vantage data for {symbol}: {str(e)}")
+            continue
         except Exception as e:
             print(f"Error fetching Alpha Vantage data for {symbol}: {str(e)}")
             continue
@@ -323,10 +359,17 @@ def get_historical_options_for_stocks():
 def index():
     stocks_data = {}
     # Get first 10 stocks for the ticker
+    # Use yfinance which is more reliable than Alpha Vantage
     for symbol in STOCK_LIST[:10]:
-        data = get_stock_data(symbol)
-        if data:
-            stocks_data[symbol] = data
+        try:
+            data = get_stock_data(symbol)
+            if data:
+                stocks_data[symbol] = data
+        except Exception as e:
+            print(f"Error processing {symbol} in index route: {str(e)}")
+            continue
+    
+    # If no stocks loaded, return empty dict (page will still load)
     return render_template('index.html', stocks=stocks_data)
 
 # Helper to aggregate all underlyings
