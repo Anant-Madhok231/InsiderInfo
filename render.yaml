@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: insider-trade-platform
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: MAIL_SERVER
+        value: smtp.gmail.com
+      - key: MAIL_PORT
+        value: 587
+      - key: MAIL_USE_TLS
+        value: True
+      - key: SECRET_KEY
+        generateValue: true
+      # Add these in Render dashboard under Environment Variables:
+      # MAIL_USERNAME
+      # MAIL_PASSWORD
+      # ALPHA_VANTAGE_API_KEY
+      # FMP_API_KEY
+

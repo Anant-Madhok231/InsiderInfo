@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Watchlist</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="/" class="logo">StockTracker</a>
+        </div>
+    </nav>
+    <div class="main-content">
+        <h1 style="text-align:center; margin-bottom:2rem;">Your Watchlist</h1>
+        {% if stocks %}
+        <div class="stocks-grid">
+            {% for stock in stocks %}
+            <div class="stock-card" onclick="window.location.href='/underlying/{{ stock.symbol }}'" style="cursor:pointer;">
+                <div class="stock-header">
+                    <h3>{{ stock.symbol }}</h3>
+                    <div class="stock-name">{{ stock.name }}</div>
+                </div>
+                <div class="stock-price">
+                    <span class="current-price">{{ stock.price }}</span>
+                    <span class="price-change {{ 'positive' if '+' in stock.change else 'negative' }}">{{ stock.change }}</span>
+                </div>
+                <div class="stock-details">
+                    <p><strong>ITR:</strong> {{ stock.itr }}</p>
+                </div>
+                <a href="{{ url_for('remove_from_watchlist', symbol=stock.symbol) }}" class="stocks-button" style="background:#f44336; margin-top:1rem;">Remove</a>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p style="text-align:center;">Your watchlist is empty.</p>
+        {% endif %}
+    </div>
+</body>
+</html> 

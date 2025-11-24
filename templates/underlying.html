@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ underlying }} - Underlying Details</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .card-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+        .detail-card {
+            background: linear-gradient(135deg, #232323 60%, #2d2d2d 100%);
+            border-radius: 18px;
+            box-shadow: 0 4px 24px rgba(76,175,80,0.15);
+            padding: 2rem 2.5rem;
+            min-width: 260px;
+            max-width: 320px;
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 0.7s cubic-bezier(.39,.575,.56,1.000) both;
+        }
+        .detail-card .icon {
+            font-size: 2.2rem;
+            color: #4CAF50;
+            margin-bottom: 1rem;
+        }
+        .detail-title {
+            font-size: 1.1rem;
+            color: #b3b3b3;
+            margin-bottom: 0.5rem;
+        }
+        .detail-value {
+            font-size: clamp(1.1rem, 2vw, 2rem);
+            font-weight: bold;
+            color: #4CAF50;
+            margin-bottom: 0.5rem;
+            word-break: break-all;
+            overflow-wrap: anywhere;
+            max-width: 100%;
+            overflow-x: auto;
+        }
+        .detail-desc {
+            font-size: 0.95rem;
+            color: #b3b3b3;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .not-found {
+            color: #f44336;
+            text-align: center;
+            margin-top: 3rem;
+            font-size: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="/" class="logo" style="font-weight:bold; font-size:1.3rem; letter-spacing:1px; cursor:pointer;">StockTracker</a>
+        </div>
+        <div class="nav-right">
+            <div class="search-container">
+                <input type="text" id="underlyingSearch" placeholder="Search for stocks, indices, or ETFs">
+                <button id="underlyingSearchBtn"><i class="fas fa-search"></i></button>
+            </div>
+        </div>
+    </nav>
+    <div class="main-content">
+        {% if not_found %}
+            <div class="not-found">
+                <i class="fas fa-exclamation-triangle"></i> Underlying '{{ underlying }}' not found.
+            </div>
+        {% else %}
+            <h1 style="text-align:center; margin-bottom:1.5rem;">{{ underlying }} - Aggregated Data</h1>
+            <div style="text-align:center; margin-bottom:1.5rem;">
+                {% set portfolio_syms = session.get('portfolio', []) | map('upper') | list %}
+                {% set watchlist_syms = session.get('watchlist', []) | map('upper') | list %}
+                {% set in_portfolio = underlying.upper() in portfolio_syms %}
+                {% set in_watchlist = underlying.upper() in watchlist_syms %}
+                {% if in_portfolio %}
+                    <a href="{{ url_for('remove_from_portfolio', symbol=underlying) }}" class="stocks-button" style="background: #f44336;">Remove from Portfolio</a>
+                {% else %}
+                    <a href="{{ url_for('add_to_portfolio', symbol=underlying) }}" class="stocks-button">Add to Portfolio</a>
+                {% endif %}
+                {% if in_watchlist %}
+                    <a href="{{ url_for('remove_from_watchlist', symbol=underlying) }}" class="stocks-button" style="background: #f44336;">Remove from Watchlist</a>
+                {% else %}
+                    <a href="{{ url_for('add_to_watchlist', symbol=underlying) }}" class="stocks-button">Add to Watchlist</a>
+                {% endif %}
+            </div>
+            <div class="card-grid">
+                {# Insider Trade Ratio Card #}
+                {% if row['insider_trade_ratio'] != '' %}
+                {% set itr = row['insider_trade_ratio']|float %}
+                {% if itr > 0.02 %}
+                    {% set card_bg = '#f44336' %} {# Red #}
+                {% elif itr >= 0.004 %}
+                    {% set card_bg = '#4CAF50' %} {# Green #}
+                {% else %}
+                    {% set card_bg = '#b3b3b3' %} {# Gray #}
+                {% endif %}
+                <div class="detail-card" style="background: {{ card_bg }}; animation-delay: 0s; color: #fff;">
+                    <div class="icon">
+                        <i class="fas fa-user-secret"></i>
+                    </div>
+                    <div class="detail-title" style="color:#eee;">Insider Trade Ratio</div>
+                    <div class="detail-value" style="font-size:3rem; font-weight:bold; color:#fff; margin-bottom:0.5rem; text-shadow:0 2px 8px #222;">{{ row['insider_trade_ratio'] }}</div>
+                    <div class="detail-desc" style="margin-top:0.5rem; color:#fff;">
+                        {% if itr > 0.02 %}
+                            <span style="font-weight:bold;">Aggressive or unusual trading.</span> Could suggest speculative or insider-like behavior. <br><span style="font-weight:bold;">(High ITR Ratio)</span>
+                        {% elif itr >= 0.004 %}
+                            <span style="font-weight:bold;">Normal market activity.</span> Nothing unusual. <br><span style="font-weight:bold;">(Normal ITR Ratio)</span>
+                        {% else %}
+                            <span style="font-weight:bold;">Inactive, conservative, or hedging behavior.</span> <br><span style="font-weight:bold;">(Low ITR Ratio)</span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+                {# Other cards #}
+                {% for col in columns if col != 'underlying' and col != 'insider_trade_ratio' %}
+                <div class="detail-card" style="animation-delay: {{ loop.index0 * 0.08 + 0.12 }}s;">
+                    <div class="icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <div class="detail-title">{{ col.replace('_', ' ').title() }}</div>
+                    <div class="detail-value">{{ row[col] }}</div>
+                    <div class="detail-desc">{{ col }}</div>
+                </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+    <script>
+        document.getElementById('underlyingSearchBtn').onclick = function() {
+            const val = document.getElementById('underlyingSearch').value.trim();
+            if (!val) return;
+            window.location.href = `/underlying/${encodeURIComponent(val)}`;
+        };
+        document.getElementById('underlyingSearch').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('underlyingSearchBtn').click();
+            }
+        });
+    </script>
+</body>
+</html> 

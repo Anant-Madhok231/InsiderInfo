@@ -1,0 +1,457 @@
+:root {
+    --primary-color: #1a1a1a;
+    --secondary-color: #2d2d2d;
+    --accent-color: #4CAF50;
+    --text-color: #ffffff;
+    --text-secondary: #b3b3b3;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: var(--primary-color);
+    color: var(--text-color);
+}
+
+/* Navbar Styles */
+.navbar {
+    background-color: var(--secondary-color);
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-left a {
+    color: var(--text-color);
+    text-decoration: none;
+    margin-right: 1.5rem;
+    font-size: 0.9rem;
+}
+
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+/* Market Ticker Styles */
+.market-ticker {
+    background-color: var(--secondary-color);
+    padding: 0.5rem;
+    display: flex;
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+.ticker-item {
+    margin-right: 2rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.positive { color: #4CAF50; }
+.negative { color: #f44336; }
+
+/* Main Content Styles */
+.main-content {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.hero-section {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.hero-section h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.hero-section p {
+    animation: fadeInUp 1s ease-out 0.2s backwards;
+}
+
+.search-bar {
+    margin: 2rem 0;
+    animation: fadeInUp 1s ease-out 0.4s backwards;
+}
+
+.search-bar input {
+    padding: 1rem;
+    width: 60%;
+    border-radius: 4px;
+    border: none;
+    background-color: var(--secondary-color);
+    color: var(--text-color);
+}
+
+.cta-button {
+    background-color: var(--accent-color);
+    color: white;
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    animation: fadeInUp 1s ease-out 0.6s backwards;
+}
+
+/* Stock Analysis Panel Styles */
+.stock-analysis {
+    background-color: var(--secondary-color);
+    padding: 2rem;
+    border-radius: 8px;
+    animation: fadeInUp 1s ease-out 0.8s backwards;
+}
+
+.score-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin: 2rem 0;
+}
+
+.score-card {
+    background-color: var(--primary-color);
+    padding: 1rem;
+    border-radius: 4px;
+    text-align: center;
+    animation: fadeInUp 1s ease-out 1s backwards;
+}
+
+.score {
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.action-buttons button {
+    padding: 0.5rem 1rem;
+    background-color: var(--primary-color);
+    border: none;
+    border-radius: 4px;
+    color: var(--text-color);
+    cursor: pointer;
+}
+
+/* Stocks Grid Styles */
+.stocks-container {
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.stocks-container h1 {
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.stocks-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.stock-card {
+    background-color: var(--secondary-color);
+    padding: 1.5rem;
+    border-radius: 8px;
+    transition: transform 0.2s;
+    animation: fadeInUp 0.5s ease-out;
+}
+
+.stock-card:hover {
+    transform: translateY(-5px);
+}
+
+.stock-header {
+    margin-bottom: 1rem;
+}
+
+.stock-header h3 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.stock-name {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.stock-price {
+    margin-bottom: 1rem;
+}
+
+.current-price {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-right: 1rem;
+}
+
+.price-change {
+    font-size: 1.1rem;
+}
+
+.stock-details {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.stock-details p {
+    margin: 0.5rem 0;
+}
+
+/* Enhanced Search Styles */
+.search-container {
+    position: relative;
+    width: 300px;
+}
+
+.search-container input {
+    width: 100%;
+    padding: 0.75rem 2.5rem 0.75rem 1rem;
+    border: 1px solid #444;
+    border-radius: 4px;
+    background-color: var(--primary-color);
+    color: var(--text-color);
+}
+
+.search-container button {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+
+.search-section {
+    max-width: 600px;
+    margin: 0 auto 2rem auto;
+}
+
+.main-search-container {
+    position: relative;
+    width: 100%;
+}
+
+.main-search-container input {
+    width: 100%;
+    padding: 1rem 3rem 1rem 1rem;
+    font-size: 1.1rem;
+    border: 2px solid var(--secondary-color);
+    border-radius: 8px;
+    background-color: var(--primary-color);
+    color: var(--text-color);
+}
+
+.main-search-container button {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 1.2rem;
+}
+
+.search-results {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: var(--secondary-color);
+    border-radius: 8px;
+    margin-top: 0.5rem;
+    max-height: 300px;
+    overflow-y: auto;
+    display: none;
+    z-index: 1000;
+}
+
+.stock-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.stock-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1));
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.stock-card:hover::after {
+    opacity: 1;
+}
+
+/* Add loading animation */
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+.loading {
+    animation: pulse 1.5s infinite;
+}
+
+/* Add these new styles for animations */
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+}
+
+@keyframes pulse-glow {
+    0% { box-shadow: 0 0 5px var(--accent-color); }
+    50% { box-shadow: 0 0 20px var(--accent-color); }
+    100% { box-shadow: 0 0 5px var(--accent-color); }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Animated Stocks Button */
+.stocks-button {
+    display: inline-block;
+    padding: 15px 30px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--text-color);
+    background: linear-gradient(45deg, #4CAF50, #45a049);
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    margin: 20px 0;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    animation: float 3s ease-in-out infinite;
+}
+
+.stocks-button:hover {
+    transform: scale(1.05);
+    animation: pulse-glow 2s infinite;
+}
+
+.stocks-button::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: rgba(255, 255, 255, 0.1);
+    transform: rotate(45deg);
+    transition: all 0.3s ease;
+}
+
+.stocks-button:hover::before {
+    transform: rotate(45deg) translateY(-100%);
+}
+
+/* Add animation classes for page elements */
+.hero-section h1 {
+    animation: fadeInUp 1s ease-out;
+}
+
+.hero-section p {
+    animation: fadeInUp 1s ease-out 0.2s backwards;
+}
+
+.search-bar {
+    animation: fadeInUp 1s ease-out 0.4s backwards;
+}
+
+.cta-button {
+    animation: fadeInUp 1s ease-out 0.6s backwards;
+}
+
+.stock-analysis {
+    animation: fadeInUp 1s ease-out 0.8s backwards;
+}
+
+.score-card {
+    animation: fadeInUp 1s ease-out 1s backwards;
+}
+
+/* Add hover effects for interactive elements */
+.nav-left a:hover {
+    color: var(--accent-color);
+    transform: translateY(-2px);
+    transition: all 0.3s ease;
+}
+
+.search-container input:focus {
+    box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
+    transform: scale(1.02);
+    transition: all 0.3s ease;
+}
+
+.stock-card {
+    animation: fadeInUp 0.5s ease-out;
+}
+
+/* Animations for homepage beautification */
+.animate-fade-in {
+    animation: fadeInUp 1.2s cubic-bezier(.39,.575,.56,1.000) both;
+}
+.animate-fade-in-delay {
+    animation: fadeInUp 1.2s cubic-bezier(.39,.575,.56,1.000) 0.3s both;
+}
+.animate-fade-in-delay2 {
+    animation: fadeInUp 1.2s cubic-bezier(.39,.575,.56,1.000) 0.6s both;
+}
+.animate-fade-in-delay3 {
+    animation: fadeInUp 1.2s cubic-bezier(.39,.575,.56,1.000) 0.9s both;
+}
+.animate-fade-in-delay4 {
+    animation: fadeInUp 1.2s cubic-bezier(.39,.575,.56,1.000) 1.2s both;
+}
+.animate-float {
+    animation: float 4s ease-in-out infinite;
+}
+.animate-float-delay {
+    animation: float 4s ease-in-out 0.5s infinite;
+}
+.animate-float-delay2 {
+    animation: float 4s ease-in-out 1s infinite;
+}
+.animate-float-delay3 {
+    animation: float 4s ease-in-out 1.5s infinite;
+}
+.animate-glow {
+    animation: pulse-glow 2s infinite alternate;
+    filter: drop-shadow(0 0 8px #4CAF50);
+} 

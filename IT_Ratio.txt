@@ -1,0 +1,59 @@
+
+Insider Trade Ratio (ITR): Full Breakdown
+-----------------------------------------
+
+Goal
+----
+The Insider Trade Ratio is a custom-made metric designed to identify trades that resemble insider behavior — large, sudden, high-risk positions that stand out from normal market activity. It detects when options are being used in aggressive or abnormal ways, often before a major event.
+
+The Formula
+-----------
+ITR = [(Volume + 1) × |Vega| × |Delta| × Implied Volatility] / [(Open Interest + 1) × (|Gamma| + |Theta| + 1)]
+
+Variable Definitions
+--------------------
+Volume             : Number of option contracts traded today
+Open Interest      : Number of contracts that are still open (held by someone from previous days)
+Delta              : Measures how much the option price moves if the stock price moves (price sensitivity)
+Gamma              : Measures how fast delta changes (sensitivity acceleration)
+Theta              : Measures how much value the option loses each day (time decay)
+Vega               : Measures how much the option price moves if market volatility changes
+Implied Volatility : Market’s expectation of how volatile the stock will be in the future
+
+Why These Are Used
+------------------
+- Volume shows current interest. If it's high and Open Interest is low, it means traders just started piling in — often suspicious.
+- Delta and Vega show that the trader is targeting options that respond strongly to price and volatility — common in directional bets.
+- Implied Volatility shows how much uncertainty the market is expecting.
+- Gamma and Theta make the trade more unstable or expensive over time — which many insiders avoid when they expect to act fast.
+
+Absolute Value (| |)
+--------------------
+Some Greeks can be negative. For example, Delta can be -0.9 (bearish) or +0.9 (bullish). We use |Delta| because we care about how strong the bet is, not which direction.
+
+Example
+-------
+Assume:
+Volume = 3000
+Vega = 0.4
+Delta = 0.75
+Implied Volatility = 0.3
+Open Interest = 500
+Gamma = 0.05
+Theta = -0.10
+
+Numerator   = (3000 + 1) × 0.4 × 0.75 × 0.3 = 3001 × 0.09 ≈ 270.1
+Denominator = (500 + 1) × (0.05 + 0.10 + 1) = 501 × 1.15 ≈ 576.15
+ITR         ≈ 270.1 / 576.15 ≈ 0.47
+
+Result: 0.47 → Low ITR → typical or passive activity.
+
+How to Interpret ITR
+--------------------
+ITR Score Range | Meaning
+----------------|--------------------------------------------------------------
+> 0.02           | Aggressive or unusual trading. Could suggest speculative or insider-like behavior.
+0.004 – 0.01      | Normal market activity. Nothing unusual.
+< 0.003           | Inactive, conservative, or hedging behavior.
+
+This ratio highlights options trades that are high-risk, short-term, and volatility-driven — the kind often used when someone knows more than they should.

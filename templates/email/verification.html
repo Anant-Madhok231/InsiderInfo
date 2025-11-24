@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Verify Your Email</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Welcome to Stock Market Analytics Platform!</h2>
+        <p>Thank you for signing up. Please verify your email address by clicking the button below:</p>
+        
+        <a href="{{ verification_url }}" class="button">Verify Email</a>
+        
+        <p>If the button doesn't work, you can also copy and paste this link into your browser:</p>
+        <p>{{ verification_url }}</p>
+        
+        <p>This link will expire in 1 hour.</p>
+        
+        <p>If you didn't sign up for an account, you can safely ignore this email.</p>
+    </div>
+</body>
+</html> 

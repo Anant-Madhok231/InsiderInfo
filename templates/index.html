@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Market Analytics Platform</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="/" class="logo">StockTracker</a>
+            <a href="/portfolio" class="nav-pill portfolio-pill">Portfolio</a>
+            <a href="/watchlist" class="nav-pill watchlist-pill">Watchlist</a>
+        </div>
+        <div class="nav-right">
+            <div class="search-container">
+                <input type="text" id="navbarSearch" placeholder="Search stocks...">
+                <button type="submit" id="navbarSearchBtn"><i class="fas fa-search"></i></button>
+            </div>
+            <button class="login-btn">Login</button>
+            <button class="signup-btn">Sign Up</button>
+        </div>
+    </nav>
+
+    <!-- Market Ticker -->
+    <div class="market-ticker">
+        {% for symbol, data in stocks.items() %}
+        <div class="ticker-item">
+            <span class="symbol">{{ symbol }}</span>
+            <span class="price">{{ data.price }}</span>
+            <span class="change {{ 'positive' if '+' in data.change else 'negative' }}">
+                {{ data.change }}
+            </span>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="hero-section animate-float">
+            <h1 class="animate-fade-in">Advanced Stock Market Insights <i class='fas fa-bolt animate-glow'></i></h1>
+            <p class="animate-fade-in-delay">Powerful stock scoring and analysis at your fingertips</p>
+            <div class="search-bar animate-fade-in-delay2">
+                <input type="text" id="underlyingSearch" placeholder="Search for stocks, indices, or ETFs">
+                <button id="underlyingSearchBtn">Search</button>
+            </div>
+            <button class="cta-button animate-glow">Sign up for free</button>
+            <span class="skill-badge animate-fade-in-delay3">Suitable for all skill levels</span>
+        </div>
+
+        <!-- Stock Analysis Panel -->
+        <div class="stock-analysis animate-fade-in-delay4">
+            <div class="stock-header">
+                <h2>AAPL <i class="fas fa-star animate-glow"></i></h2>
+                <div class="stock-price">
+                    <span class="current-price">$150.23</span>
+                    <span class="price-change positive">+2.5%</span>
+                </div>
+            </div>
+            <div class="score-grid">
+                <div class="score-card animate-float-delay">
+                    <h3>Durability Score</h3>
+                    <span class="score high">85</span>
+                </div>
+                <div class="score-card animate-float-delay2">
+                    <h3>Valuation Score</h3>
+                    <span class="score medium">65</span>
+                </div>
+                <div class="score-card animate-float-delay3">
+                    <h3>Momentum Score</h3>
+                    <span class="score high">78</span>
+                </div>
+            </div>
+            <div class="action-buttons">
+                <button><i class="fas fa-plus"></i> Watchlist</button>
+                <button><i class="fas fa-briefcase"></i> Portfolio</button>
+                <button><i class="fas fa-bell"></i> Alerts</button>
+                <button><i class="fas fa-share"></i> Share</button>
+                <button><i class="fas fa-sticky-note"></i> Notes</button>
+            </div>
+        </div>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        document.getElementById('underlyingSearchBtn').onclick = function() {
+            const val = document.getElementById('underlyingSearch').value.trim();
+            if (!val) return;
+            window.location.href = `/underlying/${encodeURIComponent(val)}`;
+        };
+        document.getElementById('underlyingSearch').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('underlyingSearchBtn').click();
+            }
+        });
+
+        // Navbar search bar functionality
+        document.getElementById('navbarSearchBtn').onclick = function() {
+            const val = document.getElementById('navbarSearch').value.trim();
+            if (!val) return;
+            window.location.href = `/underlying/${encodeURIComponent(val)}`;
+        };
+        document.getElementById('navbarSearch').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('navbarSearchBtn').click();
+            }
+        });
+    </script>
+
+    <style>
+        .nav-pill {
+            display: inline-block;
+            margin-left: 1.2rem;
+            margin-top: 0.2rem;
+            padding: 0.5rem 1.3rem;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 1rem;
+            text-decoration: none;
+            transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+            box-shadow: 0 2px 8px rgba(76,175,80,0.08);
+        }
+        .portfolio-pill {
+            background: linear-gradient(90deg, #2196F3 60%, #1565C0 100%);
+            color: #fff;
+        }
+        .portfolio-pill:hover {
+            background: linear-gradient(90deg, #1565C0 60%, #2196F3 100%);
+            color: #fff;
+        }
+        .watchlist-pill {
+            background: linear-gradient(90deg, #4CAF50 60%, #388E3C 100%);
+            color: #fff;
+        }
+        .watchlist-pill:hover {
+            background: linear-gradient(90deg, #388E3C 60%, #4CAF50 100%);
+            color: #fff;
+        }
+        .login-btn {
+            background: linear-gradient(90deg, #2196F3 60%, #1565C0 100%);
+            color: #fff;
+            border: none;
+            border-radius: 30px;
+            padding: 0.5rem 1.5rem;
+            font-weight: bold;
+            font-size: 1rem;
+            margin-left: 1rem;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+            box-shadow: 0 2px 8px rgba(33,150,243,0.08);
+        }
+        .login-btn:hover {
+            background: linear-gradient(90deg, #1565C0 60%, #2196F3 100%);
+            color: #fff;
+        }
+        .signup-btn {
+            background: linear-gradient(90deg, #4CAF50 60%, #388E3C 100%);
+            color: #fff;
+            border: none;
+            border-radius: 30px;
+            padding: 0.5rem 1.5rem;
+            font-weight: bold;
+            font-size: 1rem;
+            margin-left: 1rem;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+            box-shadow: 0 2px 8px rgba(76,175,80,0.08);
+        }
+        .signup-btn:hover {
+            background: linear-gradient(90deg, #388E3C 60%, #4CAF50 100%);
+            color: #fff;
+        }
+    </style>
+</body>
+</html> 

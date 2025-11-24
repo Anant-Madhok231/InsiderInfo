@@ -1,0 +1,48 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.venv
+
+# Flask
+instance/
+.webassets-cache
+
+# Environment variables
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Sensitive files
+finside-fef27-firebase-adminsdk-fbsvc-fe9cb7e16f.json
+*.json
+!package.json
+!package-lock.json
+
+# Data files - exclude large CSV and ZIP files
+*.csv
+*.zip
+!requirements.txt
+
+# Cache
+*.cache
+stocks_cache.json
+
