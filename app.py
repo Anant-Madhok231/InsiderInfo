@@ -15,6 +15,48 @@ import csv
 from collections import defaultdict
 from flask import g
 
+# Google Drive CSV file ID
+CSV_FILE_ID = '1PiKyr4NVkuowATtiSSDLYWaEVrTFkK2F'
+CSV_FILENAME = '2013-06-03options.csv'
+CSV_DRIVE_URL = f'https://drive.google.com/uc?export=download&id={CSV_FILE_ID}'
+
+def ensure_csv_file():
+    """Download CSV file from Google Drive if it doesn't exist locally"""
+    if not os.path.exists(CSV_FILENAME):
+        print(f"CSV file not found. Downloading from Google Drive...")
+        try:
+            response = requests.get(CSV_DRIVE_URL, stream=True)
+            response.raise_for_status()
+            
+            # Google Drive may return HTML for large files, handle that
+            if 'text/html' in response.headers.get('Content-Type', ''):
+                # Try alternative download method
+                alt_url = f'https://drive.google.com/uc?export=download&confirm=t&id={CSV_FILE_ID}'
+                response = requests.get(alt_url, stream=True)
+                response.raise_for_status()
+            
+            total_size = int(response.headers.get('content-length', 0))
+            downloaded = 0
+            
+            with open(CSV_FILENAME, 'wb') as f:
+                for chunk in response.iter_content(chunk_size=8192):
+                    if chunk:
+                        f.write(chunk)
+                        downloaded += len(chunk)
+                        if total_size > 0:
+                            percent = (downloaded / total_size) * 100
+                            if downloaded % (1024 * 1024) == 0:  # Print every MB
+                                print(f"Downloaded {downloaded / (1024*1024):.1f} MB / {total_size / (1024*1024):.1f} MB ({percent:.1f}%)")
+            
+            print(f"Successfully downloaded {CSV_FILENAME}")
+            return True
+        except Exception as e:
+            print(f"Error downloading CSV file: {str(e)}")
+            return False
+    else:
+        print(f"CSV file found locally: {CSV_FILENAME}")
+        return True
+
 app = Flask(__name__)
 app.config.from_object(Config)
 
@@ -280,6 +322,10 @@ def index():
 # Helper to aggregate all underlyings
 
 def aggregate_underlyings(filename):
+    # Ensure CSV file exists (download from Google Drive if needed)
+    if filename == CSV_FILENAME:
+        ensure_csv_file()
+    
     data = defaultdict(list)
     columns = []
     try:
@@ -334,7 +380,7 @@ def aggregate_underlyings(filename):
 
 @app.route('/search_underlying')
 def search_underlying():
-    filename = '2013-06-03options.csv'
+    filename = CSV_FILENAME
     query = request.args.get('query', '').strip().upper()
     agg_data, show_columns = aggregate_underlyings(filename)
     print(f"Searching for: {query}")  # Debug print
@@ -464,7 +510,7 @@ def update_stock_prices():
 
 @app.route('/underlying/<underlying_name>')
 def underlying_detail(underlying_name):
-    filename = '2013-06-03options.csv'
+    filename = CSV_FILENAME
     agg_data, show_columns = aggregate_underlyings(filename)
     # Find the row for the given underlying
     row = next((r for r in agg_data if r['underlying'].upper() == underlying_name.upper()), None)
@@ -487,7 +533,7 @@ def get_user_watchlist():
 def portfolio():
     portfolio = get_user_portfolio()
     stocks = []
-    agg_data, _ = aggregate_underlyings('2013-06-03options.csv')
+    agg_data, _ = aggregate_underlyings(CSV_FILENAME)
     for symbol in portfolio:
         data = get_stock_data(symbol)
         row = next((r for r in agg_data if r['underlying'].upper() == symbol.upper()), None)
@@ -510,7 +556,7 @@ def portfolio():
 def watchlist():
     watchlist = get_user_watchlist()
     stocks = []
-    agg_data, _ = aggregate_underlyings('2013-06-03options.csv')
+    agg_data, _ = aggregate_underlyings(CSV_FILENAME)
     for symbol in watchlist:
         data = get_stock_data(symbol)
         row = next((r for r in agg_data if r['underlying'].upper() == symbol.upper()), None)
@@ -565,5 +611,7 @@ def remove_from_watchlist(symbol):
     return redirect(url_for('watchlist'))
 
 if __name__ == '__main__':
+    # Ensure CSV file is available before starting the app
+    ensure_csv_file()
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=False) 
