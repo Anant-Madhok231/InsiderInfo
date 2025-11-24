@@ -92,10 +92,18 @@ distribution, or use is strictly prohibited without express written permission.
 
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     <script>
+        // Main search functionality - search for stocks
         document.getElementById('underlyingSearchBtn').onclick = function() {
-            const val = document.getElementById('underlyingSearch').value.trim();
+            const val = document.getElementById('underlyingSearch').value.trim().toUpperCase();
             if (!val) return;
-            window.location.href = `/underlying/${encodeURIComponent(val)}`;
+            
+            // Check if it's one of our 7 companies
+            const validStocks = ['AMZN', 'TSLA', 'AAPL', 'MSFT', 'JPM', 'NVDA', 'META'];
+            if (validStocks.includes(val)) {
+                window.location.href = `/underlying/${encodeURIComponent(val)}`;
+            } else {
+                alert('Please search for one of these companies: AMZN, TSLA, AAPL, MSFT, JPM, NVDA, META');
+            }
         };
         document.getElementById('underlyingSearch').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
@@ -105,9 +113,16 @@ distribution, or use is strictly prohibited without express written permission.
 
         // Navbar search bar functionality
         document.getElementById('navbarSearchBtn').onclick = function() {
-            const val = document.getElementById('navbarSearch').value.trim();
+            const val = document.getElementById('navbarSearch').value.trim().toUpperCase();
             if (!val) return;
-            window.location.href = `/underlying/${encodeURIComponent(val)}`;
+            
+            // Check if it's one of our 7 companies
+            const validStocks = ['AMZN', 'TSLA', 'AAPL', 'MSFT', 'JPM', 'NVDA', 'META'];
+            if (validStocks.includes(val)) {
+                window.location.href = `/underlying/${encodeURIComponent(val)}`;
+            } else {
+                alert('Please search for one of these companies: AMZN, TSLA, AAPL, MSFT, JPM, NVDA, META');
+            }
         };
         document.getElementById('navbarSearch').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {

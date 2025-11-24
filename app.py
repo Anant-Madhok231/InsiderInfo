@@ -77,23 +77,13 @@ verification_codes = {}
 
 # List of 100 popular US stocks
 STOCK_LIST = [
-    'AAPL', 'MSFT', 'GOOGL', 'AMZN', 'META', 'NVDA', 'TSLA', 'JPM', 'V', 'JNJ',
-    'WMT', 'PG', 'MA', 'UNH', 'HD', 'BAC', 'DIS', 'ADBE', 'NFLX', 'CRM',
-    'CSCO', 'VZ', 'COST', 'ABT', 'PEP', 'TMO', 'MRK', 'INTC', 'ORCL', 'KO',
-    'ABBV', 'PFE', 'NKE', 'CMCSA', 'AVGO', 'ACN', 'DHR', 'T', 'XOM', 'CVX',
-    'WFC', 'MCD', 'AMD', 'NEE', 'LIN', 'PM', 'UNP', 'MS', 'C', 'BMY',
-    'QCOM', 'AMGN', 'HON', 'UPS', 'LLY', 'IBM', 'BA', 'RTX', 'GS', 'BLK',
-    'SBUX', 'MMM', 'CAT', 'GE', 'AMT', 'AXP', 'CHTR', 'CVS', 'ISRG', 'NOW',
-    'MO', 'MDLZ', 'PYPL', 'TGT', 'BKNG', 'CI', 'GILD', 'SYK', 'ADP', 'TJX',
-    'CSX', 'TMUS', 'CB', 'USB', 'CME', 'CCI', 'PLD', 'ICE', 'SPGI', 'CL',
-    'DUK', 'SO', 'ANTM', 'NSC', 'D', 'EXC', 'AON', 'DE', 'ITW', 'EMR'
+    'AMZN', 'TSLA', 'AAPL', 'MSFT', 'JPM', 'NVDA', 'META'
 ]
 
 # Add these constants at the top of your file
 ALPHA_VANTAGE_BASE_URL = "https://www.alphavantage.co/query"
 POPULAR_STOCKS = [
-    'AAPL', 'MSFT', 'GOOGL', 'AMZN', 'META', 'NVDA', 'TSLA', 'JPM', 'V', 'JNJ',
-    'WMT', 'PG', 'MA', 'UNH', 'HD', 'BAC', 'DIS', 'ADBE', 'NFLX', 'CRM'
+    'AMZN', 'TSLA', 'AAPL', 'MSFT', 'JPM', 'NVDA', 'META'
 ]
 
 # Add new constant for FMP API
@@ -240,7 +230,7 @@ def get_all_stocks():
     api_key = app.config['ALPHA_VANTAGE_API_KEY']
     interval = '5min'
     stocks_data = {}
-    symbols = STOCK_LIST[:10]  # Limit to 10 stocks
+    symbols = STOCK_LIST  # All 7 stocks
     for symbol in symbols:
         try:
             # Fetch intraday data
@@ -317,7 +307,7 @@ def get_all_stocks():
 def get_historical_options_for_stocks():
     api_key = app.config['ALPHA_VANTAGE_API_KEY']
     base_url = ALPHA_VANTAGE_BASE_URL
-    symbols = STOCK_LIST[:5]  # Limit to 5 stocks to avoid rate limits
+    symbols = STOCK_LIST  # All 7 stocks
     all_options_data = {}
     for symbol in symbols:
         try:
@@ -358,9 +348,9 @@ def get_historical_options_for_stocks():
 @app.route('/')
 def index():
     stocks_data = {}
-    # Get first 10 stocks for the ticker
+    # Get all 7 stocks for the ticker
     # Use yfinance which is more reliable than Alpha Vantage
-    for symbol in STOCK_LIST[:10]:
+    for symbol in STOCK_LIST:
         try:
             data = get_stock_data(symbol)
             if data:
@@ -445,15 +435,20 @@ def search_underlying():
 
 @app.route('/search')
 def search():
-    query = request.args.get('query', '').upper()
+    query = request.args.get('query', '').strip().upper()
     results = []
     
     if query:
-        # Search in both symbol and company name
+        # Search in both symbol and company name within our 7 companies
         for symbol in STOCK_LIST:
-            data = get_stock_data(symbol)
-            if data:
-                if query in symbol or query.lower() in data['name'].lower():
+            if query in symbol.upper():
+                data = get_stock_data(symbol)
+                if data:
+                    results.append(data)
+            else:
+                # Try to get data and check company name
+                data = get_stock_data(symbol)
+                if data and query.lower() in data.get('name', '').lower():
                     results.append(data)
     
     return jsonify(results)
