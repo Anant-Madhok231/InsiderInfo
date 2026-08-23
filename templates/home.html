@@ -19,10 +19,11 @@ distribution, or use is strictly prohibited without express written permission.
         .logout-btn:hover { background: #ddd; }
         .welcome { margin: 2rem 0 1rem; }
         .welcome h1 { margin-bottom: 0.25rem; }
-        .welcome p { color: #666; }
+        .welcome p { color: #999; }
         .home-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.25rem; margin-top: 1.5rem; }
-        .home-card { border: 1px solid #e5e5e5; border-radius: 12px; padding: 1.25rem 1.5rem; background: #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.04); }
-        .home-card h3 { margin: 0 0 0.5rem; font-size: 1.05rem; }
+        .home-card { border: 1px solid #e5e5e5; border-radius: 12px; padding: 1.25rem 1.5rem; background: #fff; color: #333; box-shadow: 0 2px 10px rgba(0,0,0,0.04); }
+        .home-card h3 { margin: 0 0 0.5rem; font-size: 1.05rem; color: #1a1a1a; }
+        .home-card p { color: #555; }
         .home-card .big { font-size: 2rem; font-weight: bold; color: #1565C0; }
         .home-card a { color: #1565C0; text-decoration: none; font-weight: bold; }
         .home-card ul { margin: 0.5rem 0 0; padding-left: 1.1rem; color: #444; }
@@ -38,7 +39,7 @@ distribution, or use is strictly prohibited without express written permission.
             <a href="{{ url_for('watchlist') }}" class="nav-pill watchlist-pill">Watchlist</a>
         </div>
         <div class="nav-right">
-            <span style="margin-right:0.5rem;color:#555;">{{ user.username }}</span>
+            <span style="margin-right:0.5rem;color:#ddd;font-weight:600;">{{ user.username }}</span>
             <a href="{{ url_for('logout') }}" class="logout-btn">Log out</a>
         </div>
     </nav>
