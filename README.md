@@ -15,6 +15,10 @@ A Flask-based web application for analyzing stock market data and calculating In
 - Options data analysis
 - Search functionality for stocks and underlyings
 
+## Quick Start
+
+See [HOW_TO_RUN.md](HOW_TO_RUN.md) — clone, `pip install -r requirements.txt`, copy `.env.example` to `.env`, `python app.py`.
+
 ## Insider Trade Ratio (ITR)
 
 The ITR metric identifies trades that resemble insider behavior — large, sudden, high-risk positions that stand out from normal market activity.
@@ -30,6 +34,8 @@ ITR = [(Volume + 1) × |Vega| × |Delta| × Implied Volatility] / [(Open Interes
 - **< 0.003**: Inactive, conservative, or hedging behavior
 
 ## Setup Instructions
+
+> **Just want to run it?** [**HOW_TO_RUN.md**](HOW_TO_RUN.md) walks through it step by step, including where to get each API key and what to do when something breaks.
 
 ### Local Development
 
@@ -144,7 +150,7 @@ ITR = [(Volume + 1) × |Vega| × |Delta| × Implied Volatility] / [(Open Interes
 
 - **Free tier limitations**: Render's free tier spins down after 15 minutes of inactivity. The first request after spin-down may take 30-60 seconds.
 - **Environment variables**: Never commit sensitive keys to GitHub. Always use environment variables.
-- **Database**: Currently using in-memory storage. For production, consider using a database like PostgreSQL (available on Render).
+- **Database**: Accounts are stored in SQLite by default. Render's free tier has an ephemeral filesystem, so set `DATABASE_URL` to a Postgres instance if accounts need to survive a redeploy.
 
 ## Project Structure
 
@@ -158,6 +164,7 @@ ITR = [(Volume + 1) × |Vega| × |Delta| × Implied Volatility] / [(Open Interes
 ├── render.yaml           # Render deployment config
 ├── templates/            # HTML templates
 ├── static/               # CSS, JS, and other static files
+├── HOW_TO_RUN.md         # Step-by-step setup guide
 └── README.md            # This file
 ```
 
