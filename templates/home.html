@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<!--
+Copyright (c) 2025 Anant Madhok. All Rights Reserved.
+This software is proprietary and confidential. Unauthorized copying, modification,
+distribution, or use is strictly prohibited without express written permission.
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - Stock Market Analytics Platform</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .nav-pill { padding: 0.4rem 1.2rem; border-radius: 30px; text-decoration: none; margin-left: 0.75rem; font-weight: bold; }
+        .portfolio-pill { background: linear-gradient(90deg, #2196F3 60%, #1565C0 100%); color: #fff; }
+        .watchlist-pill { background: linear-gradient(90deg, #4CAF50 60%, #388E3C 100%); color: #fff; }
+        .logout-btn { background: #eee; color: #333; border: none; border-radius: 30px; padding: 0.5rem 1.5rem; font-weight: bold; margin-left: 1rem; cursor: pointer; text-decoration: none; }
+        .logout-btn:hover { background: #ddd; }
+        .welcome { margin: 2rem 0 1rem; }
+        .welcome h1 { margin-bottom: 0.25rem; }
+        .welcome p { color: #666; }
+        .home-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.25rem; margin-top: 1.5rem; }
+        .home-card { border: 1px solid #e5e5e5; border-radius: 12px; padding: 1.25rem 1.5rem; background: #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.04); }
+        .home-card h3 { margin: 0 0 0.5rem; font-size: 1.05rem; }
+        .home-card .big { font-size: 2rem; font-weight: bold; color: #1565C0; }
+        .home-card a { color: #1565C0; text-decoration: none; font-weight: bold; }
+        .home-card ul { margin: 0.5rem 0 0; padding-left: 1.1rem; color: #444; }
+        .flash-message { background: #e8f5e9; border: 1px solid #4CAF50; color: #2e7d32; padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 1rem; }
+        .empty { color: #999; font-style: italic; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="{{ url_for('index') }}" class="logo">StockTracker</a>
+            <a href="{{ url_for('portfolio') }}" class="nav-pill portfolio-pill">Portfolio</a>
+            <a href="{{ url_for('watchlist') }}" class="nav-pill watchlist-pill">Watchlist</a>
+        </div>
+        <div class="nav-right">
+            <span style="margin-right:0.5rem;color:#555;">{{ user.username }}</span>
+            <a href="{{ url_for('logout') }}" class="logout-btn">Log out</a>
+        </div>
+    </nav>
+
+    {% if stocks %}
+    <div class="market-ticker">
+        {% for symbol, data in stocks.items() %}
+        <div class="ticker-item">
+            <span class="symbol">{{ symbol }}</span>
+            <span class="price">{{ data.price }}</span>
+            <span class="change {{ 'positive' if '+' in data.change else 'negative' }}">{{ data.change }}</span>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <main class="main-content">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="flash-message">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="welcome">
+            <h1>Welcome back, {{ user.username }}</h1>
+            <p>Signed in as {{ user.email }}</p>
+        </div>
+
+        <div class="home-grid">
+            <div class="home-card">
+                <h3>Portfolio</h3>
+                <div class="big">{{ portfolio|length }}</div>
+                {% if portfolio %}
+                    <ul>{% for s in portfolio[:5] %}<li>{{ s }}</li>{% endfor %}</ul>
+                {% else %}
+                    <p class="empty">Nothing added yet.</p>
+                {% endif %}
+                <p style="margin-top:0.75rem;"><a href="{{ url_for('portfolio') }}">Open portfolio &rarr;</a></p>
+            </div>
+
+            <div class="home-card">
+                <h3>Watchlist</h3>
+                <div class="big">{{ watchlist|length }}</div>
+                {% if watchlist %}
+                    <ul>{% for s in watchlist[:5] %}<li>{{ s }}</li>{% endfor %}</ul>
+                {% else %}
+                    <p class="empty">Nothing added yet.</p>
+                {% endif %}
+                <p style="margin-top:0.75rem;"><a href="{{ url_for('watchlist') }}">Open watchlist &rarr;</a></p>
+            </div>
+
+            <div class="home-card">
+                <h3>Insider Trade Ratio</h3>
+                <p>Look up any underlying to see its ITR.</p>
+                <ul>
+                    <li>&gt; 0.02 &mdash; unusual activity</li>
+                    <li>0.004 &ndash; 0.01 &mdash; normal</li>
+                    <li>&lt; 0.003 &mdash; quiet</li>
+                </ul>
+                <p style="margin-top:0.75rem;"><a href="{{ url_for('index') }}">Search underlyings &rarr;</a></p>
+            </div>
+        </div>
+    </main>
+
+    <footer style="text-align: center; padding: 20px; margin-top: 50px; color: #666; font-size: 12px; border-top: 1px solid #eee;">
+        <p>&copy; 2025 Anant Madhok. All Rights Reserved. | Proprietary Software</p>
+    </footer>
+</body>
+</html>

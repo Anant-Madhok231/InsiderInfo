@@ -46,3 +46,6 @@ finside-fef27-firebase-adminsdk-fbsvc-fe9cb7e16f.json
 *.cache
 stocks_cache.json
 
+# Local database
+*.db
+instance/
