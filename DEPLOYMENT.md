@@ -53,11 +53,12 @@ git push -u origin main
    MAIL_SERVER = smtp.gmail.com
    MAIL_PORT = 587
    MAIL_USE_TLS = True
-   MAIL_USERNAME = insidertrade05@gmail.com
-   MAIL_PASSWORD = cxiu rhyt fxea figg
+   MAIL_USERNAME = <your-gmail-address>
+   MAIL_PASSWORD = <your-gmail-app-password>
    SECRET_KEY = <generate-random-key>
-   ALPHA_VANTAGE_API_KEY = T21J4YZC2W2M1WL5
-   FMP_API_KEY = wsxz6HnLfi2bLaV7wFP3DDcDeAfLfKhz
+   ALPHA_VANTAGE_API_KEY = <your-alpha-vantage-key>
+   FMP_API_KEY = <your-fmp-key>
+   POLYGON_API_KEY = <your-polygon-key>
    PYTHON_VERSION = 3.11.0
    ```
    
@@ -90,4 +91,3 @@ After deployment, you can add the live URL to your GitHub repository:
 - Your app is now live! Share the Render URL with others
 - Monitor usage in Render dashboard
 - Consider upgrading to paid tier for better performance (no spin-down)
-

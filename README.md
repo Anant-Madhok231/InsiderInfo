@@ -52,7 +52,7 @@ ITR = [(Volume + 1) × |Vega| × |Delta| × Implied Volatility] / [(Open Interes
 
 4. **Set up environment variables**
    
-   Create a `.env` file in the root directory:
+   Copy `.env.example` to `.env` in the root directory and fill in your own values:
    ```env
    MAIL_SERVER=smtp.gmail.com
    MAIL_PORT=587
@@ -62,6 +62,7 @@ ITR = [(Volume + 1) × |Vega| × |Delta| × Implied Volatility] / [(Open Interes
    SECRET_KEY=your-secret-key-here
    ALPHA_VANTAGE_API_KEY=your-alpha-vantage-api-key
    FMP_API_KEY=your-fmp-api-key
+   POLYGON_API_KEY=your-polygon-api-key
    ```
 
 5. **Run the application**
@@ -119,11 +120,12 @@ ITR = [(Volume + 1) × |Vega| × |Delta| × Implied Volatility] / [(Open Interes
    MAIL_SERVER=smtp.gmail.com
    MAIL_PORT=587
    MAIL_USE_TLS=True
-   MAIL_USERNAME=insidertrade05@gmail.com
-   MAIL_PASSWORD=cxiu rhyt fxea figg
+   MAIL_USERNAME=<your-gmail-address>
+   MAIL_PASSWORD=<your-gmail-app-password>
    SECRET_KEY=<generate-a-random-secret-key>
-   ALPHA_VANTAGE_API_KEY=T21J4YZC2W2M1WL5
-   FMP_API_KEY=wsxz6HnLfi2bLaV7wFP3DDcDeAfLfKhz
+   ALPHA_VANTAGE_API_KEY=<your-alpha-vantage-key>
+   FMP_API_KEY=<your-fmp-key>
+   POLYGON_API_KEY=<your-polygon-key>
    PYTHON_VERSION=3.11.0
    ```
 
@@ -163,6 +165,7 @@ ITR = [(Volume + 1) × |Vega| × |Delta| × Implied Volatility] / [(Open Interes
 
 - **Alpha Vantage API**: Get free key from https://www.alphavantage.co/support/#api-key
 - **Financial Modeling Prep API**: Get free key from https://site.financialmodelingprep.com/developer/docs/
+- **Polygon API**: Get free key from https://polygon.io/dashboard/api-keys
 - **Gmail App Password**: For email verification, create an app password in your Google Account settings
 
 ## Technologies Used
@@ -197,4 +200,3 @@ See [COPYRIGHT.txt](COPYRIGHT.txt) and [LICENSE](LICENSE) for full terms.
 ## Support
 
 For issues or questions, please open an issue on GitHub or contact the copyright holder.
-
