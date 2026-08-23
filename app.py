@@ -90,7 +90,7 @@ POPULAR_STOCKS = [
 FMP_API_KEY = app.config['FMP_API_KEY']  # Get from config instead of hardcoding
 FMP_BASE_URL = "https://financialmodelingprep.com/api/v3"
 
-POLYGON_API_KEY = "eqZkr10laolNO4aKeFxmqkZpnS3Cxssc"
+POLYGON_API_KEY = app.config['POLYGON_API_KEY']  # Get from config instead of hardcoding
 
 def generate_verification_code():
     # Generate a 6-digit verification code and ensure it's a string
