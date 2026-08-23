@@ -16,6 +16,7 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from config import Config
+from models import db, User
 from datetime import datetime
 import requests
 import time
@@ -70,9 +71,20 @@ def ensure_csv_file():
 app = Flask(__name__)
 app.config.from_object(Config)
 
-# Simple in-memory storage (this will reset when server restarts)
-users = {}
-unverified_users = {}
+# Accounts live in a database so they survive a restart, and passwords are
+# stored as hashes rather than plaintext. DATABASE_URL lets you point at
+# Postgres in production; otherwise a local SQLite file is used.
+_db_url = os.environ.get('DATABASE_URL', 'sqlite:///users.db')
+if _db_url.startswith('postgres://'):
+    _db_url = _db_url.replace('postgres://', 'postgresql://', 1)
+app.config['SQLALCHEMY_DATABASE_URI'] = _db_url
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db.init_app(app)
+with app.app_context():
+    db.create_all()
+
+# Signup codes are deliberately kept in memory: they expire within minutes
+# and never need to outlive the process.
 verification_codes = {}
 
 # List of 100 popular US stocks
@@ -364,7 +376,16 @@ def index():
 
 # Helper to aggregate all underlyings
 
+_underlyings_cache = {}
+
 def aggregate_underlyings(filename):
+    """Cached wrapper. The uncached version re-reads and re-aggregates the
+    whole options CSV, which previously happened on every single request."""
+    if filename not in _underlyings_cache:
+        _underlyings_cache[filename] = _aggregate_underlyings_uncached(filename)
+    return _underlyings_cache[filename]
+
+def _aggregate_underlyings_uncached(filename):
     # Ensure CSV file exists (download from Google Drive if needed)
     if filename == CSV_FILENAME:
         ensure_csv_file()
@@ -465,26 +486,39 @@ def signup():
             flash('Passwords do not match')
             return redirect(url_for('signup'))
 
-        if email in users or email in unverified_users:
+        existing = User.query.filter_by(email=email).first()
+        if existing and existing.is_verified:
             flash('Email already registered')
+            return redirect(url_for('signup'))
+
+        name_taken = User.query.filter(
+            User.username == username, User.email != email
+        ).first()
+        if name_taken:
+            flash('That username is already taken')
             return redirect(url_for('signup'))
 
         # Generate verification code
         verification_code = generate_verification_code()
         verification_codes[email] = verification_code
 
-        # Send verification email
-        if send_verification_email(email, verification_code):
-            unverified_users[email] = {
-                'username': username,
-                'password': password
-            }
-            session['temp_email'] = email
-            flash('Verification code sent to your email!')
-            return redirect(url_for('verify_code'))
-        else:
+        # Send verification email before creating anything
+        if not send_verification_email(email, verification_code):
+            verification_codes.pop(email, None)
             flash('Error sending verification email. Please try again.')
             return redirect(url_for('signup'))
+
+        # Re-signup before verifying just refreshes the pending record.
+        user = existing or User(username=username, email=email)
+        user.username = username
+        user.is_verified = False
+        user.set_password(password)
+        db.session.add(user)
+        db.session.commit()
+
+        session['temp_email'] = email
+        flash('Verification code sent to your email!')
+        return redirect(url_for('verify_code'))
 
     return render_template('signup.html')
 
@@ -495,25 +529,20 @@ def verify_code():
         return redirect(url_for('signup'))
 
     if request.method == 'POST':
-        user_code = request.form.get('verification_code').strip()
+        user_code = (request.form.get('verification_code') or '').strip()
         stored_code = verification_codes.get(email)
-        
-        # Debug prints
-        print(f"User entered code: '{user_code}', type: {type(user_code)}")
-        print(f"Stored code: '{stored_code}', type: {type(stored_code)}")
-        print(f"Are they equal? {user_code == stored_code}")
-        print(f"Verification codes dict: {verification_codes}")
-        
-        if user_code == stored_code:
-            # Move user from unverified to verified
-            users[email] = unverified_users.pop(email)
-            verification_codes.pop(email)
-            session.pop('temp_email')
+
+        if user_code and user_code == stored_code:
+            user = User.query.filter_by(email=email).first()
+            if user:
+                user.is_verified = True
+                db.session.commit()
+            verification_codes.pop(email, None)
+            session.pop('temp_email', None)
             flash('Email verified successfully! You can now login.')
             return redirect(url_for('login'))
         else:
             flash('Invalid verification code. Please try again.')
-            print(f"Codes don't match. User: '{user_code}' vs Stored: '{stored_code}'")
 
     return render_template('verify_code.html')
 
@@ -523,13 +552,15 @@ def login():
         email = request.form.get('email')
         password = request.form.get('password')
         
-        if email in unverified_users:
+        user = User.query.filter_by(email=email).first()
+
+        if user and not user.is_verified:
             flash('Please verify your email before logging in.')
             session['temp_email'] = email
             return redirect(url_for('verify_code'))
-        
-        if email in users and users[email]['password'] == password:
-            session['user_email'] = email
+
+        if user and user.check_password(password):
+            session['user_email'] = user.email
             flash('Logged in successfully!')
             return redirect(url_for('home'))
         else:
@@ -537,10 +568,43 @@ def login():
     
     return render_template('login.html')
 
+@app.route('/home')
+def home():
+    """Signed-in landing page.
+
+    login() and logout() both redirect here. The endpoint did not exist,
+    so url_for('home') raised BuildError and returned a 500 every time.
+    """
+    user = None
+    if session.get('user_email'):
+        user = User.query.filter_by(email=session['user_email']).first()
+    if user is None:
+        session.pop('user_email', None)
+        return redirect(url_for('index'))
+
+    stocks_data = {}
+    for symbol in STOCK_LIST:
+        try:
+            data = get_stock_data(symbol)
+            if data:
+                stocks_data[symbol] = data
+        except Exception as e:
+            print(f"Error processing {symbol} in home route: {str(e)}")
+            continue
+
+    return render_template(
+        'home.html',
+        user=user,
+        stocks=stocks_data,
+        portfolio=get_user_portfolio(),
+        watchlist=get_user_watchlist(),
+    )
+
 @app.route('/logout')
 def logout():
     session.pop('user_email', None)
-    return redirect(url_for('home'))
+    flash('Logged out.')
+    return redirect(url_for('index'))
 
 @app.route('/update-stock-prices')
 def update_stock_prices():
@@ -662,4 +726,4 @@ if __name__ == '__main__':
     # Ensure CSV file is available before starting the app
     ensure_csv_file()
     port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port, debug=False) 
+    app.run(host='0.0.0.0', port=port, debug=False)
