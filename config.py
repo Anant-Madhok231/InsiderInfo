@@ -9,45 +9,47 @@ For licensing inquiries: GitHub @Anant-Madhok231
 """
 
 import os
+import secrets
 
 from dotenv import load_dotenv
 
 load_dotenv()
 
 
-class ConfigError(RuntimeError):
-    """Raised when the application is started without its required settings."""
+def _credential(name):
+    """Read a credential from the environment.
 
-
-def _required(name):
-    """Return an environment variable, or fail loudly if it is not set.
-
-    Credentials deliberately have no default. A missing value should stop the
-    application at startup rather than silently fall through to a placeholder.
+    Credentials are never hardcoded in this file. If one is missing the value
+    comes back empty and a warning is logged, so the application still starts
+    and only the feature that needs it fails. That is deliberate: a missing
+    key should not take the whole site down at import time.
     """
-    value = os.environ.get(name)
+    value = os.environ.get(name, "")
     if not value:
-        raise ConfigError(
-            "Missing required environment variable: {name}. "
-            "Copy .env.example to .env and fill it in for local development, "
-            "or set {name} in your host's environment settings.".format(name=name)
+        print(
+            "[config] {name} is not set. "
+            "Features that depend on it will not work until it is configured "
+            "in .env (local) or the host's environment settings.".format(name=name)
         )
     return value
 
 
 class Config:
-    # Mail transport. These are not secrets, so a sensible default is fine.
+    # Mail transport. Not secret, so defaults are fine.
     MAIL_SERVER = os.environ.get("MAIL_SERVER", "smtp.gmail.com")
     MAIL_PORT = int(os.environ.get("MAIL_PORT", 587))
     MAIL_USE_TLS = os.environ.get("MAIL_USE_TLS", "True").lower() == "true"
 
     # Credentials for the application's sending account.
-    MAIL_USERNAME = _required("MAIL_USERNAME")
-    MAIL_PASSWORD = _required("MAIL_PASSWORD")
+    MAIL_USERNAME = _credential("MAIL_USERNAME")
+    MAIL_PASSWORD = _credential("MAIL_PASSWORD")
 
-    # Signs Flask session cookies. A known value lets anyone forge a session.
-    SECRET_KEY = _required("SECRET_KEY")
+    # Signs Flask session cookies. Falls back to a fresh random value per
+    # process: sessions reset on restart, but a publicly known key can never
+    # be used to forge one.
+    SECRET_KEY = os.environ.get("SECRET_KEY") or secrets.token_hex(32)
 
     # Market data providers.
-    ALPHA_VANTAGE_API_KEY = _required("ALPHA_VANTAGE_API_KEY")
-    FMP_API_KEY = _required("FMP_API_KEY")
+    ALPHA_VANTAGE_API_KEY = _credential("ALPHA_VANTAGE_API_KEY")
+    FMP_API_KEY = _credential("FMP_API_KEY")
+    POLYGON_API_KEY = _credential("POLYGON_API_KEY")
